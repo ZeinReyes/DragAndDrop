@@ -1,0 +1,253 @@
+* {
+  box-sizing: border-box;
+  font-family: "Comic Neue", "Comic Sans MS", Arial, sans-serif;
+}
+
+body {
+  margin: 16px;
+  background: #fff7e6; /* soft peach background */
+  color: #2e2e2e;
+}
+
+/* Main Layout */
+.main-container {
+  display: flex;
+  gap: 16px;
+  height: 95vh;
+  align-items: stretch; /* all children equal height */
+}
+
+.draggable,
+.workspace,
+.right-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Palette */
+.draggable {
+  width: 160px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #ffe6e6; /* light pink */
+  border: 3px solid #ff99cc;
+}
+
+.elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.elements img {
+  width: 60px;
+  height: 60px;
+  cursor: grab;
+  border-radius: 12px;
+  background: #d1ffd1; /* mint green */
+  padding: 6px;
+  transition: transform 0.2s, background 0.2s;
+}
+.elements img:hover {
+  transform: scale(1.1);
+  background: #b3ffb3;
+}
+
+/* Workspace */
+.workspace {
+  flex: 1;
+}
+
+.whiteboard-wrap {
+  position: relative;
+  flex: 1;
+  padding: 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #e6f7ff, #fff7e6);
+  border: 3px solid #66b3ff;
+}
+
+.whiteboard {
+  position: relative;
+  flex: 1;
+  border: 3px dashed #66b3ff;
+  border-radius: 14px;
+  padding: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  height: 100%;
+}
+
+/* Slots */
+.slot {
+  min-width: 48px;
+  min-height: 38px;
+  border-radius: 10px;
+  border: 2px dashed #ffcc66;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  margin: 6px;
+  background: #fff3cc;
+  transition: outline 0.2s, background 0.2s;
+}
+
+.slot.over {
+  outline: 2px solid #4ade80;
+  background: #d9f99d;
+}
+
+/* Variable */
+.variable {
+  display: flex;
+  flex-direction: column;  
+  background: #fff176;   
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 140px;
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+}
+
+.variable .top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.var-label {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.var-eq {
+  opacity: 0.9;
+}
+
+.variable-slot {
+  flex: 1;
+}
+
+.var-edit {
+  margin-left: 5px;
+  font-size: 13px;
+  color: black;
+  align-self: flex-start;
+}
+
+/* Operator */
+.operator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 12px;
+  background: #cce5ff; /* sky blue */
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+}
+
+.operator img {
+  width: 26px;
+  height: 26px;
+}
+
+/* Overlay */
+.dim-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  display: none;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.dim-overlay.visible {
+  display: block;
+}
+
+/* Trash Can */
+.trash-can {
+  place-self: end;
+  background: #ffcccc;
+  padding: 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  width: 44px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.trash-can:hover {
+  transform: scale(1.2);
+  background: #ff9999;
+}
+.trash-can.over {
+  box-shadow: 0 0 0 3px rgba(255, 100, 100, 0.5);
+}
+
+/* Run Button */
+.run-button {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #4ade80; /* playful green */
+  border: none;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.run-button:hover {
+  background: #22c55e;
+}
+
+/* Code Panel */
+.code-panel {
+  width: 320px;
+  height: 50%;
+  padding: 12px;
+  border-radius: 12px;
+  background: #e0f2fe; 
+}
+
+pre {
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  color: #1e40af;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
+  background: #fff176; /* bright yellow */
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: none;
+  color: #1e293b;
+  font-weight: 700;
+  border: 2px solid #facc15;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  background: #e6f7ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: none;
+  font-size: 13px;
+  color: #075985;
+  border: 1px solid #93c5fd;
+}
+
+/* Helpers */
+.slot.variable-slot {
+  min-width: 120px;
+}
