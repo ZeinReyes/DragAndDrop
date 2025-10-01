@@ -251,3 +251,31 @@ pre {
 .slot.variable-slot {
   min-width: 120px;
 }
+
+.elif-node, .else-node {
+  background: #c5cae9; /* light indigo */
+  border-radius: 8px;
+  padding: 4px;
+  margin-top: 4px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+.elif-cond-slot, .elif-body-slot, .else-body-slot {
+  min-width: 60px;
+  min-height: 20px;
+  border: 1px dashed #555;
+  margin: 4px;
+  display: inline-block;
+}
+.if-connectors {
+  border: 2px dashed #4a90e2;
+  border-radius: 10px;
+  padding: 6px;
+  margin-top: 6px;
+  background: #eef6ff;
+  color: #4a90e2;
+  font-size: 12px;
+  text-align: center;
+}
+.if-connectors:empty::after {
+  content: "Drop elif/else here";
+}

@@ -52,14 +52,26 @@ export default function DragBoard() {
           <div className="elements">
             <img src="/assets/images/print.png" data-type="print" draggable="true" alt="Print" />
             <img src="/assets/images/container.png" data-type="variable" alt="Variable" />
+            
+            {/* Arithmetic operators */}
             <img src="/assets/images/multiply.png" data-type="multiply" draggable="true" alt="Multiply"/>
             <img src="/assets/images/add.png" data-type="add" draggable="true" alt="Add"/>
             <img src="/assets/images/subtract.png" data-type="subtract" draggable="true" alt="Subtract"/>
             <img src="/assets/images/divide.png" data-type="divide" draggable="true" alt="Divide"/>
-            <img src="/assets/images/if.png" data-type="if" draggable="true" alt="If"/>
-            <img src="/assets/images/ifelifelse.png" data-type="if-elif-else" draggable="true" alt="If-Elif-Else Node"/>
 
-            <img src="/assets/images/ifelse.png" data-type="if-else" draggable="true" alt="If-Else"/>
+            {/* NEW: Comparison operators */}
+            <img src="/assets/images/equal.png" data-type="equal" draggable="true" alt="Equal ==" />
+            <img src="/assets/images/notequal.png" data-type="notequal" draggable="true" alt="Not Equal !=" />
+            <img src="/assets/images/less.png" data-type="less" draggable="true" alt="Less Than <" />
+            <img src="/assets/images/lessequal.png" data-type="lessequal" draggable="true" alt="Less or Equal <=" />
+            <img src="/assets/images/greater.png" data-type="greater" draggable="true" alt="Greater Than >" />
+            <img src="/assets/images/greaterequal.png" data-type="greaterequal" draggable="true" alt="Greater or Equal >=" />
+
+            {/* Conditionals */}
+            {/* Conditionals */}
+            <img src="/assets/images/if.png" data-type="if" draggable="true" alt="If"/>
+            <img src="/assets/images/elif.png" data-type="elif" draggable="true" alt="Elif"/>
+            <img src="/assets/images/else.png" data-type="else" draggable="true" alt="Else"/>
           </div>
         </div>
 
