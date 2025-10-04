@@ -14,7 +14,7 @@ body {
   display: flex;
   gap: 16px;
   height: 95vh;
-  align-items: stretch; /* all children equal height */
+  align-items: stretch;
 }
 
 .draggable,
@@ -41,8 +41,8 @@ body {
 }
 
 .elements img {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   cursor: grab;
   border-radius: 12px;
   background: #d1ffd1; /* mint green */
@@ -99,17 +99,20 @@ body {
   background: #d9f99d;
 }
 
-/* Variable */
+/* Variable Node */
 .variable {
-  display: flex;
-  flex-direction: column;  
-  background: #fff176;   
+  display: inline-flex;        /* Wrap content naturally */
+  flex-direction: column;      /* Stack name, lid, slot vertically */
+  align-items: center;         /* Center content horizontally */
+  background: #fff176;
   border-radius: 12px;
   padding: 6px;
   min-width: 140px;
   box-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+  border: 1px solid #d8cfa8;  /* Optional from new style */
 }
 
+/* Top section of variable node */
 .variable .top {
   display: flex;
   align-items: center;
@@ -125,18 +128,57 @@ body {
   opacity: 0.9;
 }
 
+/* Variable slot */
 .variable-slot {
-  flex: 1;
+  display: inline-flex;        /* Fit children naturally */
+  gap: 4px;                    /* Space between operators/inputs */
+  padding: 2px 4px;
+  border: 2px dashed #aaa;
+  border-radius: 6px;
+  margin: 6px 0;
+  min-height: 30px;
+  min-width: 40px;             /* Updated min-width */
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  max-height: 40px;
+  opacity: 1;
 }
 
-.var-edit {
-  margin-left: 5px;
+/* Slot input */
+.variable-slot input, .slot-input {
+  width: auto;                 /* Let input grow based on content */
+  min-width: 30px;
+  border: none;
+  outline: none;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Hidden slot */
+.variable-slot.hidden {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+/* Editing slot */
+.variable-slot.editing {
+  background: #fff;
+  border-style: solid;
+}
+
+/* Empty slot placeholder */
+.variable-slot .empty {
+  color: #777;
+  font-style: italic;
   font-size: 13px;
-  color: black;
-  align-self: flex-start;
+  opacity: 1;
 }
 
-/* Operator */
+/* Operator Node */
 .operator {
   display: inline-flex;
   align-items: center;
@@ -152,7 +194,182 @@ body {
   height: 26px;
 }
 
-/* Overlay */
+.operator-node .slot {
+  min-width: 80px;
+  min-height: 40px;
+  border: 2px dashed #888;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  color: #aaa;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.operator-node .slot:hover {
+  border-color: #ffda79;
+  background: rgba(255, 218, 121, 0.1);
+}
+
+.operator-node .slot > .print-node,
+.operator-node .slot > .variable-node,
+.operator-node .slot > .operator-node {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #333c5a;
+  border: 1px solid #666;
+  border-radius: 6px;
+  box-shadow: inset 1px 1px 4px rgba(0,0,0,0.4);
+}
+
+/* Delete Button */
+.delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Print Node */
+.print-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border: 2px solid #4CAF50;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  min-width: 120px;
+}
+
+.printer-img {
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+}
+
+.print-slot {
+  width: 100%;
+  padding: 8px 12px;
+  background: #f9f9f9;
+  border: 2px dashed #bbb;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.print-slot:hover {
+  background: #f0f0f0;
+  border-color: #4CAF50;
+}
+
+.print-slot .empty {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.print-slot span:not(.empty) {
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+/* Card Style */
+.card-style {
+  background: #fff8dc;
+  border: 2px solid #deb887;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  position: relative;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.modal-header {
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.modal-body {
+  margin-bottom: 12px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 6px 8px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-btn.primary {
+  background: #007bff;
+  color: #fff;
+}
+
+.modal-btn.secondary {
+  background: #ccc;
+}
+
+/* Misc Helpers */
 .dim-overlay {
   position: absolute;
   inset: 0;
@@ -166,7 +383,6 @@ body {
   display: block;
 }
 
-/* Trash Can */
 .trash-can {
   place-self: end;
   background: #ffcccc;
@@ -185,7 +401,6 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 100, 100, 0.5);
 }
 
-/* Run Button */
 .run-button {
   margin-top: 12px;
   padding: 10px 12px;
@@ -207,7 +422,7 @@ body {
   height: 50%;
   padding: 12px;
   border-radius: 12px;
-  background: #e0f2fe; 
+  background: #e0f2fe;
 }
 
 pre {
@@ -247,11 +462,7 @@ pre {
   border: 1px solid #93c5fd;
 }
 
-/* Helpers */
-.slot.variable-slot {
-  min-width: 120px;
-}
-
+/* If/Else Nodes */
 .elif-node, .else-node {
   background: #c5cae9; /* light indigo */
   border-radius: 8px;
@@ -278,4 +489,10 @@ pre {
 }
 .if-connectors:empty::after {
   content: "Drop elif/else here";
+}
+
+/* Generic Node */
+.node {
+  user-select: none;
+  touch-action: none;
 }

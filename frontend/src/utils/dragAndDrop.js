@@ -9,7 +9,7 @@ import {
   setDragType,
   clearDragType
 } from './draggable';
-import { createElementFromType } from './elementFactory';
+import { createElement } from './elementFactory';
 
 export function initDragAndDrop({
   paletteSelector = '.elements img',
@@ -106,7 +106,7 @@ export function initDragAndDrop({
 
   // Case 2: Dropping a new palette item
   if (_dragType) {
-    const el = createElementFromType(_dragType, whiteboard, codeArea, dimOverlay);
+    const el = createElement(_dragType, whiteboard, codeArea, dimOverlay);
 
     // Auto-attach only when new from palette
     if (_dragType === 'elif' || _dragType === 'else') {

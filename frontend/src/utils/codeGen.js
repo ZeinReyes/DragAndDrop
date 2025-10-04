@@ -2,6 +2,9 @@
 import { isOperator } from './nesting';
 import { slotToCode } from './helpers';
 
+// ✅ Counter for unnamed variables
+let variableCounter = 1;
+
 export function detectTypeAndFormat(value) {
   if (value == null || value === "") return { code: "None", type: "unknown" };
   if (/^-?\d+$/.test(value)) return { code: value, type: "int" };
@@ -43,67 +46,121 @@ export function generateNodeCode(node) {
 
   // ---------- Operator ----------
   if (node.classList.contains("operator")) {
-    const op = node.dataset.op;
+    const op = node.dataset.op; // always comes from dataset
     const slots = node.querySelectorAll(".slot");
-    const left = exprFromSlot(slots[0]);
-    const right = exprFromSlot(slots[1]);
-    const opMap = { add: "+", subtract: "-", multiply: "*", divide: "/", equal: "==", notequal: "!=", less: "<", lessequal: "<=", greater: ">", greaterequal: ">=" };
+
+    // explicitly extract from both slots
+    const left = slots[0] ? exprFromSlot(slots[0]) : { code: "0", type: "unknown" };
+    const right = slots[1] ? exprFromSlot(slots[1]) : { code: "0", type: "unknown" };
+
+    const opMap = {
+      add: "+",
+      subtract: "-",
+      multiply: "*",
+      divide: "/",
+      equal: "==",
+      notequal: "!=",
+      less: "<",
+      lessequal: "<=",
+      greater: ">",
+      greaterequal: ">="
+    };
+
     const pyOp = opMap[op] || "+";
-    return { code: `${left.code} ${pyOp} ${right.code}`, type: (op in opMap && !["add","subtract","multiply","divide"].includes(op)) ? "bool" : (left.type === right.type ? left.type : "mixed") };
+
+    return {
+      code: `${left.code} ${pyOp} ${right.code}`,
+      type: ["equal", "notequal", "less", "lessequal", "greater", "greaterequal"].includes(op)
+        ? "bool"
+        : left.type === right.type
+        ? left.type
+        : "mixed"
+    };
   }
 
   // ---------- Variable ----------
   if (node.classList.contains("variable")) {
-    let name = "result";
-    const label = node.querySelector(".var-label");
-    const renameInput = node.querySelector(".var-name-input");
-    if (label) name = label.textContent.trim() || "result";
-    else if (renameInput) name = renameInput.value.trim() || "result";
+    const varName = node.dataset.varName?.trim() || "result";
     const slot = node.querySelector(".variable-slot");
     const rhs = exprFromSlot(slot);
-    return { code: `${name} = ${rhs.code}  # ${rhs.type}`, type: rhs.type };
+
+    const typedValue = node.dataset.value?.trim();
+    if (typedValue && (!slot || slot.children.length === 0)) {
+      const detected = detectTypeAndFormat(typedValue);
+      return {
+        code: `${varName} = ${detected.code}  # ${detected.type}`,
+        type: detected.type
+      };
+    }
+
+    return {
+      code: `${varName} = ${rhs.code}  # ${rhs.type}`,
+      type: rhs.type
+    };
   }
 
   // ---------- Print ----------
   if (node.classList.contains("print-node")) {
     const slot = node.querySelector(".print-slot");
-    const arg = exprFromSlot(slot);
-    return { code: `print(${arg.code})`, type: "print" };
+    if (!slot) return { code: "print()", type: "print" };
+
+    const nestedExpr = exprFromSlot(slot);
+    if (nestedExpr && nestedExpr.code !== "0" && nestedExpr.type !== "unknown") {
+      return { code: `print(${nestedExpr.code})`, type: "print" };
+    }
+
+    const value = slot.dataset.value?.trim() || "";
+    if (value === "") return { code: "print()", type: "print" };
+
+    if (/[\+\-\*\/<>=]/.test(value)) {
+      const tokens = value.split(/(\s*[\+\-\*\/<>=]\s*)/);
+      const formatted = tokens
+        .map(t => {
+          if (/^[\+\-\*\/<>=]+$/.test(t.trim())) return t;
+          if (t.trim() === "") return t;
+          return detectTypeAndFormat(t.trim()).code;
+        })
+        .join("");
+      return { code: `print(${formatted})`, type: "print" };
+    }
+
+    const expr = detectTypeAndFormat(value);
+    return { code: `print(${expr.code})`, type: "print" };
   }
 
-// inside generateNodeCode for if/elif/else:
+  // ---------- If / Elif / Else ----------
+  if (node.classList.contains("if-node")) {
+    const cond = exprFromSlot(node.querySelector('.if-cond'));
+    const bodySlot = node.querySelector('.if-body');
+    const body =
+      bodySlot && bodySlot.children.length > 0 ? slotToCode(bodySlot) : "pass";
 
-if (node.classList.contains("if-node")) {
-  const cond = exprFromSlot(node.querySelector('.if-cond'));
-  const bodySlot = node.querySelector('.if-body');
-  const body = bodySlot && bodySlot.children.length > 0 
-    ? slotToCode(bodySlot) 
-    : "pass";
+    let code = `if ${formatCondition(cond)}:\n${body.replace(/^/gm, '    ')}`;
 
-  let code = `if ${formatCondition(cond)}:\n${body.replace(/^/gm, '    ')}`;
-
-  const connectors = node.querySelectorAll('.if-connectors > .elif-node, .if-connectors > .else-node');
-  connectors.forEach(c => {
-    if (c.classList.contains('elif-node')) {
-      const elifCond = exprFromSlot(c.querySelector('.elif-cond'));
-      const elifBodySlot = c.querySelector('.elif-body');
-      const elifBody = elifBodySlot && elifBodySlot.children.length > 0
-        ? slotToCode(elifBodySlot)
-        : "pass";
-      code += `\nelif ${formatCondition(elifCond)}:\n${elifBody.replace(/^/gm, '    ')}`;
-    }
-    if (c.classList.contains('else-node')) {
-      const elseBodySlot = c.querySelector('.else-body');
-      const elseBody = elseBodySlot && elseBodySlot.children.length > 0
-        ? slotToCode(elseBodySlot)
-        : "pass";
-      code += `\nelse:\n${elseBody.replace(/^/gm, '    ')}`;
-    }
-  });
-  return { code, type: "conditional" };
-}
-
-
+    const connectors = node.querySelectorAll(
+      '.if-connectors > .elif-node, .if-connectors > .else-node'
+    );
+    connectors.forEach(c => {
+      if (c.classList.contains('elif-node')) {
+        const elifCond = exprFromSlot(c.querySelector('.elif-cond'));
+        const elifBodySlot = c.querySelector('.elif-body');
+        const elifBody =
+          elifBodySlot && elifBodySlot.children.length > 0
+            ? slotToCode(elifBodySlot)
+            : "pass";
+        code += `\nelif ${formatCondition(elifCond)}:\n${elifBody.replace(/^/gm, '    ')}`;
+      }
+      if (c.classList.contains('else-node')) {
+        const elseBodySlot = c.querySelector('.else-body');
+        const elseBody =
+          elseBodySlot && elseBodySlot.children.length > 0
+            ? slotToCode(elseBodySlot)
+            : "pass";
+        code += `\nelse:\n${elseBody.replace(/^/gm, '    ')}`;
+      }
+    });
+    return { code, type: "conditional" };
+  }
 
   // ---------- Input (fallback) ----------
   if (node.tagName === "INPUT") {
@@ -135,11 +192,13 @@ export function updateCode(whiteboard, codeArea) {
     child.classList.contains("elif-node") ||
     child.classList.contains("else-node")
   );
+
   let code = "";
   nodes.forEach(n => {
     const { code: line } = generateNodeCode(n);
     if (line.trim()) code += line + "\n";
   });
+
   codeArea.textContent = code.trim() || "# Drag elements to build code";
   updateVariableTooltips(whiteboard);
 }

@@ -10,7 +10,6 @@ export default function DragBoard() {
   useEffect(() => {
     const whiteboard = document.getElementById('whiteboard');
     const codeArea = document.getElementById('codeArea');
-    const dimOverlay = document.getElementById('dimOverlay');
     const trashCan = document.getElementById('trashCan');
     const notification = document.getElementById('notification');
     const runButton = document.getElementById('runButton');
@@ -20,7 +19,6 @@ export default function DragBoard() {
       paletteSelector: '.elements img',
       whiteboard,
       codeArea,
-      dimOverlay,
       trashCan,
       notification
     });
@@ -29,12 +27,12 @@ export default function DragBoard() {
     runButton.addEventListener('click', onRun);
 
     const observer = new MutationObserver(() => {
-      updateVariableState(whiteboard, dimOverlay);
+      updateVariableState(whiteboard);
       updateCode(whiteboard, codeArea);
     });
     observer.observe(whiteboard, { childList: true, subtree: true });
 
-    updateVariableState(whiteboard, dimOverlay);
+    updateVariableState(whiteboard);
     updateCode(whiteboard, codeArea);
 
     return () => {
@@ -50,8 +48,8 @@ export default function DragBoard() {
         <div className="draggable">
           <h3>Elements</h3>
           <div className="elements">
-            <img src="/assets/images/print.png" data-type="print" draggable="true" alt="Print" />
-            <img src="/assets/images/container.png" data-type="variable" alt="Variable" />
+            <img src="/assets/images/printer.png" data-type="print" draggable="true" alt="Print" />
+            <img src="/assets/images/container.png" data-type="variable" draggable="true" alt="Variable" />
             
             {/* Arithmetic operators */}
             <img src="/assets/images/multiply.png" data-type="multiply" draggable="true" alt="Multiply"/>
